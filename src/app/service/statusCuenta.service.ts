@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { StatusCuenta } from '../entity/statusCuenta';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatusCuentaService {
-  private apiUrl = 'http://localhost:8080/api/statuscuenta';
+  private apiUrl = `${environment.apiUrl}/api/statuscuenta`;
 
   constructor(private http: HttpClient) {}
 

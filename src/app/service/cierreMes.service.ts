@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // La interfaz CierreMesResponse sigue siendo útil si tu backend *eventualmente*
 // envía un JSON. Pero para esta API, estamos tratando un string.
@@ -16,7 +17,7 @@ export interface CierreMesResponse {
   providedIn: 'root'
 })
 export class CierreMesService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) { }
 

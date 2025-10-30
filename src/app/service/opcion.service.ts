@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Opcion } from '../entity/opcion';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OpcionService {
-  private apiBase = 'http://localhost:8080/api';
+  private apiBase = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) {}
 
@@ -29,7 +30,7 @@ export class OpcionService {
   }
 
   getOpcionesPorMenu(idMenu: number): Observable<Opcion[]> {
-    return this.http.get<Opcion[]>(`http://localhost:8080/api/opciones_por_menu/${idMenu}`);
+    return this.http.get<Opcion[]>(`${this.apiBase}/opciones_por_menu/${idMenu}`);
   }
 
   createOpcionDTO(opcion: Opcion): Observable<Opcion> {

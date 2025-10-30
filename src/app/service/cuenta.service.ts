@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface CuentaDto {
   idsaldocuenta: number;
@@ -60,14 +61,14 @@ export interface StatusCuenta {
   providedIn: 'root'
 })
 export class CuentaService {
-  private apiBase = 'http://localhost:8080/api';
+  private apiBase = `${environment.apiUrl}/api`;
   private base = `${this.apiBase}/saldo-cuentas`;
 
   constructor(private http: HttpClient) { }
 
   // Método para obtener nombre completo de persona por ID
   obtenerNombrePersonaPorId(idPersona: number): Observable<string> {
-    return this.http.get(`http://localhost:8080/${idPersona}`, { responseType: 'text' });
+    return this.http.get(`${environment.apiUrl}/${idPersona}`, { responseType: 'text' });
   }
 
   // Método para obtener documentos de una persona

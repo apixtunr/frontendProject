@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DocumentoPersona } from '../entity/documentoPersona';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentoPersonaService {
-  private apiUrl = 'http://localhost:8080/api/documentos-persona'; // Ajustada la URL base según el backend
+  private apiUrl = `${environment.apiUrl}/api/documentos-persona`; // Ajustada la URL base según el backend
 
   constructor(private http: HttpClient) { }
 

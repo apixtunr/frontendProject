@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Genero } from '../entity/genero';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class GeneroService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

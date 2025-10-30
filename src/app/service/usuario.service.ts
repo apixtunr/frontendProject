@@ -4,10 +4,11 @@ import { Observable } from 'rxjs';
 import { Usuario } from '../entity/usuario';
 import { RolOpcion } from '../entity/rolopcion';
 import { Role } from '../entity/role';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:8080';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

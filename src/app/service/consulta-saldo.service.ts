@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Interfaces para la consulta de saldos
 export interface ConsultaSaldoRequest {
@@ -51,7 +52,7 @@ export interface ResultadoConsultaDto {
   providedIn: 'root'
 })
 export class ConsultaSaldoService {
-  private apiBase = 'http://localhost:8080/api';
+  private apiBase = `${environment.apiUrl}/api`;
 
   constructor(private http: HttpClient) { }
 

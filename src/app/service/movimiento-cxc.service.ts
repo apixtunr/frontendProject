@@ -6,12 +6,13 @@ import { PersonaDto } from '../entity/persona.dto';
 import { CuentaDto } from '../entity/cuenta.dto';
 import { RegistroMovimientoRequest } from '../entity/registro-movimiento.request';
 import { RegistroMovimientoResponse } from '../entity/registro-movimiento.response';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovimientoCxcService {
-  private baseUrl = 'http://localhost:8080/api'; // ❌ Quita el /v1
+  private baseUrl = `${environment.apiUrl}/api`; // ❌ Quita el /v1
 
   constructor(private http: HttpClient) { }
 

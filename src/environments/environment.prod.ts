@@ -1,3 +1,4 @@
 export const environment = {
-    production: true
-  };
+  production: true,
+  apiUrl: 'https://backendproject-production-cea8.up.railway.app'
+};

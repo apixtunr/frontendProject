@@ -3,11 +3,12 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RolOpcion, RolOpcionDTO } from '../entity/rolopcion';
 import { Opcion } from '../entity/opcion';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({ providedIn: 'root' })
 export class RolOpcionService {
-  private apiUrl = 'http://localhost:8080/roleopcion';
+  private apiUrl = `${environment.apiUrl}/roleopcion`;
 
   constructor(private http: HttpClient) {}
 
@@ -23,6 +24,6 @@ export class RolOpcionService {
   
   // Obtener todas las opciones
   getOpciones(): Observable<Opcion[]> {
-    return this.http.get<Opcion[]>('http://localhost:8080/opcion/list');
+    return this.http.get<Opcion[]>(`${environment.apiUrl}/opcion/list`);
   }
 }
