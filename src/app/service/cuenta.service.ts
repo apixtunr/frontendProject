@@ -127,6 +127,6 @@ export class CuentaService {
 
   // Obtener status de cuenta desde la base de datos
   getStatusCuenta(): Observable<StatusCuenta[]> {
-    return this.http.get<StatusCuenta[]>(`http://localhost:8080/api/statuscuenta`);
+    return this.http.get<StatusCuenta[]>(`${environment.apiUrl}/api/statuscuenta`);
   }
 }
