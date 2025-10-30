@@ -1,0 +1,64 @@
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+  <div class="card shadow-sm p-4 animate__animated animate__fadeInDown" style="min-width: 320px; max-width: 350px;">
+    <div class="text-center mb-3">
+      <img src="./assets/login.png" width="300" alt="Login" class="animate__animated animate__pulse animate__infinite" />
+    </div>
+
+    <!-- Mensaje de error -->
+    <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show animate__animated animate__fadeIn" role="alert">
+      <i class="fas fa-exclamation-triangle me-2"></i>
+      {{ errorMessage }}
+      <button type="button" class="btn-close" (click)="clearError()" aria-label="Close"></button>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()" id="loginForm">
+      <div class="mb-3">
+        <label class="form-label">Usuario: *</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          formControlName="idUsuario" 
+          placeholder="Usuario"
+          (focus)="clearError()"
+          [disabled]="isLoading" />
+        <div *ngIf="loginForm.get('idUsuario')?.invalid && loginForm.get('idUsuario')?.touched" class="text-danger">
+          <small *ngIf="loginForm.get('idUsuario')?.errors?.['required']">El usuario es obligatorio.</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password: *</label>
+        <input 
+          type="password" 
+          class="form-control" 
+          formControlName="password" 
+          placeholder="Contraseña"
+          (focus)="clearError()"
+          [disabled]="isLoading" />
+        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-danger">
+          <small *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</small>
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="btn btn-outline-info w-100 mb-2"
+        [class.animate__animated]="!isLoading"
+        [class.animate__pulse]="!isLoading"
+        [class.animate__infinite]="!isLoading"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+        {{ isLoading ? 'Ingresando...' : 'Ingresar' }}
+      </button>
+
+      <a routerLink="/cambiopassword" class="btn btn-link w-100" [class.disabled]="isLoading">
+        ¿Olvidó su contraseña?
+      </a>
+    </form>
+  </div>
+</div>
+
+<!-- Animaciones mágicas con Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<!-- Font Awesome para iconos -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />

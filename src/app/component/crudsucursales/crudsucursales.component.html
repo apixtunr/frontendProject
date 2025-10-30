@@ -1,0 +1,177 @@
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Gestión de Sucursales</h2>
+  <div class="d-flex justify-content-start">
+    <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+      Ir al Menú <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+  <!-- Formulario Reactivo -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form
+        [formGroup]="sucursalForm"
+        (ngSubmit)="isEditMode ? onUpdate() : onSubmit()"
+      >
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              class="form-control"
+              formControlName="nombre"
+              [ngClass]="{
+                'is-invalid':
+                  sucursalForm.get('nombre')?.touched &&
+                  sucursalForm.get('nombre')?.invalid
+              }"
+            />
+            <div
+              *ngIf="
+                sucursalForm.get('nombre')?.touched &&
+                sucursalForm.get('nombre')?.hasError('required')
+              "
+              class="invalid-feedback"
+            >
+              El nombre es obligatorio
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input
+              type="text"
+              id="direccion"
+              class="form-control"
+              formControlName="direccion"
+              [ngClass]="{
+                'is-invalid':
+                  sucursalForm.get('direccion')?.touched &&
+                  sucursalForm.get('direccion')?.invalid
+              }"
+            />
+            <div
+              *ngIf="
+                sucursalForm.get('direccion')?.touched &&
+                sucursalForm.get('direccion')?.hasError('required')
+              "
+              class="invalid-feedback"
+            >
+              La dirección es obligatoria
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-3">
+            <label for="idEmpresa" class="form-label">Empresa</label>
+            <select
+              id="idEmpresa"
+              class="form-select"
+              formControlName="idEmpresa"
+              [ngClass]="{
+                'is-invalid':
+                  sucursalForm.get('idEmpresa')?.touched &&
+                  sucursalForm.get('idEmpresa')?.invalid
+              }"
+            >
+              <option
+                *ngFor="let empresa of empresas"
+                [value]="empresa.idEmpresa"
+              >
+                {{ empresa.nombre }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                sucursalForm.get('idEmpresa')?.touched &&
+                sucursalForm.get('idEmpresa')?.hasError('required')
+              "
+              class="invalid-feedback"
+            >
+              La empresa es obligatoria
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-12 d-flex gap-2">
+            <!-- Botón Guardar (Alta) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="sucursalForm.invalid || !permisosSucursal?.alta"
+              *ngIf="!isEditMode && permisosSucursal?.alta"
+            >
+              Agregar Sucursal
+            </button>
+            <!-- Botón Actualizar (Cambio) -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="sucursalForm.invalid || !permisosSucursal?.cambio"
+              *ngIf="isEditMode && permisosSucursal?.cambio"
+            >
+              Actualizar Sucursal
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="onReset()">
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de sucursales -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Sucursal</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>ID Empresa</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
+          <th class="sticky-buttons">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let suc of sucursales">
+          <td>{{ suc.idSucursal }}</td>
+          <td>{{ suc.nombre }}</td>
+          <td>{{ suc.direccion }}</td>
+          <td>{{ suc.idEmpresa }}</td>
+          <td>{{ suc.fechaCreacion | date : "yyyy-MM-dd" }}</td>
+          <td>{{ suc.usuarioCreacion }}</td>
+          <td>{{ suc.fechaModificacion | date : "yyyy-MM-dd" }}</td>
+          <td>{{ suc.usuarioModificacion }}</td>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(suc)"
+                *ngIf="permisosSucursal?.cambio"
+                [disabled]="!permisosSucursal?.cambio"
+              >
+                Editar
+              </button>
+              <!-- Botón Eliminar (Baja) -->
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(suc.idSucursal)"
+                *ngIf="permisosSucursal?.baja"
+                [disabled]="!permisosSucursal?.baja"
+              >
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

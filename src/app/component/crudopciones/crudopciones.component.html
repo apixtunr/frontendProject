@@ -1,0 +1,128 @@
+<div class="container my-5">
+	<div class="mb-3">
+		<button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+      		Ir al Menú <i class="bi bi-arrow-right"></i>
+    	</button>
+	</div>
+	<h2 class="mb-4 text-center">Gestión de Opciones</h2>
+
+	<!-- Formulario para agregar/editar opción -->
+	<div class="card mb-5 shadow-sm">
+		<div class="card-body">
+			<form [formGroup]="opcionForm" (ngSubmit)="editando ? onUpdate() : onSubmit()">
+				<div class="row g-3">
+					<div class="col-md-3">
+						<label class="form-label">Menú</label>
+						<select class="form-select" formControlName="idMenu" required>
+							<option value="">Seleccione menú</option>
+							<option *ngFor="let menu of menus" [value]="menu.idmenu">
+                {{ menu.nombre }} ({{ getNombreModulo(menu.idmodulo) }})
+              </option>
+						</select>
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">Nombre</label>
+						<input type="text" class="form-control" formControlName="nombre" placeholder="Nombre de la opción" />
+					</div>
+
+         <!-- Campo eliminado, ahora lo maneja el backend
+
+					<div class="col-md-4">
+						<label class="form-label">Página</label>
+						<input type="text" class="form-control" formControlName="pagina" placeholder="Página" />
+					</div>
+        -->
+
+				</div>
+				<div class="row g-3 mt-2">
+					<div class="col-md-4">
+						<label class="form-label">Descripción</label>
+						<input type="text" class="form-control" formControlName="descripcion" placeholder="Descripción" />
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">URL</label>
+						<input type="text" class="form-control" formControlName="url" placeholder="URL" />
+					</div>
+				</div>
+				<div class="mt-4 d-flex gap-2">
+								<!-- Botón Agregar (Alta) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="opcionForm.invalid || !permisosOpcion?.alta"
+									*ngIf="!editando && permisosOpcion?.alta"
+								>
+									Agregar
+								</button>
+								<!-- Botón Actualizar (Cambio) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="opcionForm.invalid || !permisosOpcion?.cambio"
+									*ngIf="editando && permisosOpcion?.cambio"
+								>
+									Actualizar
+								</button>
+					<button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Tabla de opciones -->
+	<div class="table-responsive">
+		<table class="table table-striped table-bordered align-middle">
+			<thead class="table-dark">
+				<tr>
+				<!--	<th>ID</th>-->
+					<th>Menú</th>
+					<th>Nombre</th>
+				<!--	<th>Orden</th>-->
+<!--	<th>Página</th>-->
+					<th>Descripción</th>
+					<th>URL</th>
+					<th>Fecha Creación</th>
+					<th>Usuario Creación</th>
+					<th>Fecha Modificación</th>
+					<th>Usuario Modificación</th>
+					<th class="text-center">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let opcion of opciones">
+			<!--	<td>{{ opcion.idOpcion }}</td> -->
+					<td>{{ getNombreMenu(opcion.idMenu) }}</td>
+					<td>{{ opcion.nombre }}</td>
+				<!--	<td>{{ opcion.ordenmenu }}</td>-->
+<!--		<td>{{ opcion.pagina }}</td>-->
+					<td>{{ opcion.descripcion }}</td>
+					<td>{{ opcion.url }}</td>
+					<td>{{ opcion.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ opcion.usuarioCreacion }}</td>
+					<td>{{ opcion.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ opcion.usuarioModificacion }}</td>
+					<td class="text-center">
+									<!-- Botón Editar (Cambio) -->
+									<button
+										class="btn btn-sm btn-info me-1"
+										(click)="onEdit(opcion)"
+										*ngIf="permisosOpcion?.cambio"
+										[disabled]="!permisosOpcion?.cambio"
+									>
+										Editar
+									</button>
+									<!-- Botón Eliminar (Baja) -->
+									<button
+										class="btn btn-sm btn-danger"
+										(click)="onDelete(opcion.idOpcion)"
+										*ngIf="permisosOpcion?.baja"
+										[disabled]="!permisosOpcion?.baja"
+									>
+										Eliminar
+									</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

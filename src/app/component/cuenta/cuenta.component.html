@@ -1,0 +1,415 @@
+<div class="container-fluid mt-4">
+  <div class="row">
+    
+    <!-- Panel izquierdo: Búsqueda y creación -->
+    <div class="col-lg-4">
+      
+      <!-- Búsqueda de Persona -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-person-search"></i>
+            Gestión de Cuentas Corrientes
+          </h5>
+        </div>
+        <div class="card-body">
+          
+          <!-- Formulario de búsqueda -->
+          <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <label for="personaId" class="form-label mb-0">
+                <i class="bi bi-hash"></i>
+                ID de Persona
+              </label>
+            <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+                Ir al Menú <i class="bi bi-arrow-right"></i>
+            </button>
+            </div>
+            <input 
+              type="number" 
+              id="personaId"
+              class="form-control" 
+              [(ngModel)]="personaId"
+              name="personaId"
+              (ngModelChange)="onPersonaIdChange()"
+              placeholder="Ingrese el ID de la persona"
+              min="1" />
+          </div>
+
+          <!-- Indicador de carga -->
+          <div *ngIf="loading" class="d-flex align-items-center text-primary mb-3">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <span>Buscando persona...</span>
+          </div>
+
+          <!-- Resultado exitoso -->
+          <div *ngIf="nombrePersona && !error" class="alert alert-success d-flex align-items-center" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <div>
+              <strong>Persona encontrada:</strong><br>
+              <span class="h6 mb-0">{{ nombrePersona }}</span>
+            </div>
+          </div>
+
+          <!-- Mensaje de error -->
+          <div *ngIf="error" class="alert alert-danger d-flex align-items-center" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <div>{{ error }}</div>
+          </div>
+
+          <!-- Mensaje de éxito -->
+          <div *ngIf="successMessage" class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <div>{{ successMessage }}</div>
+          </div>
+
+          <!-- Botones de acción principal -->
+          <div class="d-grid gap-2">
+            <button 
+              type="button" 
+              class="btn btn-outline-primary"
+              (click)="onPersonaIdChange()"
+              [disabled]="!personaId || personaId <= 0 || loading">
+              <i class="bi bi-search"></i>
+              Buscar Persona
+            </button>
+            
+            <button 
+              type="button" 
+              class="btn btn-outline-info"
+              (click)="cargarDocumentos()"
+              [disabled]="!personaId || !nombrePersona || nombrePersona.includes('no encontrada')">
+              <i class="bi bi-file-text"></i>
+              Ver Documentos
+            </button>
+            
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary"
+              (click)="limpiarFormulario()">
+              <i class="bi bi-arrow-clockwise"></i>
+              Limpiar Todo
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Formulario de creación de cuenta -->
+      <div class="card" *ngIf="nombrePersona && !nombrePersona.includes('no encontrada')">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0">
+            <i class="bi bi-plus-circle"></i>
+            Apertura de Cuenta Corriente
+          </h6>
+        </div>
+        <div class="card-body">
+          <form>
+            
+            <div class="mb-3">
+              <label class="form-label">
+                Tipo de Saldo
+                <span *ngIf="cargandoTipos" class="spinner-border spinner-border-sm ms-2" role="status"></span>
+              </label>
+              <select class="form-select" [(ngModel)]="nuevaCuenta.idtiposaldocuenta" name="tipoSaldo" 
+                      [disabled]="cargandoTipos">
+                <option value="" disabled>-- Seleccione un tipo --</option>
+                <option *ngFor="let tipo of tiposSaldoCuenta" [value]="tipo.idtiposaldocuenta">
+                  {{ tipo.nombre }}
+                </option>
+              </select>
+              <small class="form-text text-muted" *ngIf="tiposSaldoCuenta.length === 0 && !cargandoTipos">
+                No hay tipos de saldo disponibles
+              </small>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">
+                Status de Cuenta
+                <span *ngIf="cargandoStatus" class="spinner-border spinner-border-sm ms-2" role="status"></span>
+              </label>
+              <select class="form-select" [(ngModel)]="nuevaCuenta.idstatuscuenta" name="statusCuenta" 
+                      [disabled]="cargandoStatus">
+                <option value="" disabled>-- Seleccione un status --</option>
+                <option *ngFor="let status of statusCuenta" [value]="status.idstatuscuenta">
+                  {{ status.nombre }}
+                </option>
+              </select>
+              <small class="form-text text-muted" *ngIf="statusCuenta.length === 0 && !cargandoStatus">
+                No hay status de cuenta disponibles
+              </small>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Saldo Anterior</label>
+                <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.saldoanterior" 
+                       name="saldoAnterior" step="0.01" min="0">
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Débitos</label>
+                <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.debitos" 
+                       name="debitos" step="0.01" min="0">
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Créditos</label>
+              <input type="number" class="form-control" [(ngModel)]="nuevaCuenta.creditos" 
+                     name="creditos" step="0.01" min="0">
+            </div>
+
+            <!-- Cálculo automático del saldo 
+            <div class="mb-3">
+              <div class="card bg-light">
+                <div class="card-body p-2">
+                  <small class="text-muted">Cálculo automático:</small><br>
+                  <strong>Saldo Estimado: </strong>
+                  <span class="text-primary">
+                    {{ (nuevaCuenta.saldoanterior || 0) + (nuevaCuenta.debitos || 0) - (nuevaCuenta.creditos || 0) | currency:'USD':'symbol':'1.2-2' }}
+                  </span>
+                  <br>
+                  <small class="text-muted">SaldoAnterior + Débitos - Créditos</small>
+                </div>
+              </div>
+            </div>-->
+
+            <div class="d-grid">
+              <button 
+                type="button" 
+                class="btn btn-success"
+                (click)="crearCuenta()"
+                [disabled]="creandoCuenta || !personaId || !nuevaCuenta.idtiposaldocuenta || !nuevaCuenta.idstatuscuenta">
+                
+                <span *ngIf="creandoCuenta" class="spinner-border spinner-border-sm me-2"></span>
+                <i *ngIf="!creandoCuenta" class="bi bi-plus-circle me-2"></i>
+                {{ creandoCuenta ? 'Creando...' : 'Crear Cuenta' }}
+              </button>
+              
+              <!-- Información de ayuda -->
+              <small class="form-text text-muted mt-2" *ngIf="!personaId">
+                <i class="bi bi-info-circle"></i> Primero busque una persona
+              </small>
+              <small class="form-text text-muted mt-2" *ngIf="personaId && (!nuevaCuenta.idtiposaldocuenta || !nuevaCuenta.idstatuscuenta)">
+                <i class="bi bi-exclamation-triangle"></i> Complete todos los campos requeridos
+              </small>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Panel derecho: Listado de cuentas y detalles -->
+    <div class="col-lg-8">
+      
+      <!-- Listado de cuentas de la persona -->
+      <div class="card" *ngIf="nombrePersona && !nombrePersona.includes('no encontrada')">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-0">
+              <i class="bi bi-credit-card-2-front"></i>
+              Cuentas asociadas a la persona<!--{{ nombrePersona }}-->
+            </h6>
+          </div>
+          <button class="btn btn-light btn-sm" (click)="cargarCuentasPersona()">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+        
+        <div class="card-body">
+          
+          <!-- Indicador de carga de cuentas -->
+          <div *ngIf="cargandoCuentas" class="text-center p-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando cuentas...</span>
+            </div>
+            <p class="mt-2 text-muted">Cargando cuentas...</p>
+          </div>
+
+          <!-- Lista de cuentas -->
+          <div *ngIf="!cargandoCuentas && cuentas.length > 0">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead class="table-light">
+                  <tr>
+                    <th>ID Cuenta</th>
+                    <th>Tipo</th>
+                    <th>Fecha de Creación</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                    <!--<th>Saldo Anterior</th>
+                    <th>Débitos</th>
+                    <th>Créditos</th>
+                    <th>Saldo Actual</th>-->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let cuenta of cuentas" 
+                      [class.table-primary]="cuentaSeleccionada?.idsaldocuenta === cuenta.idsaldocuenta">
+                    <td><strong>{{ cuenta.idsaldocuenta }}</strong></td>
+                    <td>
+                      <span class="badge bg-info text-dark">
+                        {{ obtenerNombreTipoSaldo(cuenta.idtiposaldocuenta || 0) }}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {{ cuenta.fechacreacion | date:'dd/MM/yyyy HH:mm' }}
+                      </span>
+                    </td>      
+                    <td>
+                      <span>
+                        {{ cuenta.usuariocreacion }}
+                      </span>
+                    </td>  
+                    <td>
+            <span class="badge bg-success">
+              {{ obtenerNombreStatus(cuenta.idstatuscuenta || 0) }}
+            </span>
+          </td>         
+                    <!--<td>{{ cuenta.saldoanterior | currency:'Q':'symbol':'1.2-2' }}</td>
+                    <td class="text-success">{{ cuenta.debitos || 0 | currency:'Q':'symbol':'1.2-2' }}</td>
+                    <td class="text-danger">{{ cuenta.creditos || 0 | currency:'Q':'symbol':'1.2-2' }}</td>
+                    <td>
+                    </td>-->
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin cuentas -->
+          <div *ngIf="!cargandoCuentas && cuentas.length === 0" class="text-center p-4">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <p class="text-muted mt-3">Esta persona aún no tiene cuentas registradas.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Panel de documentos -->
+      <div class="card mt-4" *ngIf="mostrarDocumentos">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-0">
+              <i class="bi bi-file-earmark-text"></i>
+              Documentos de {{ nombrePersona }}
+            </h6>
+          </div>
+          <button class="btn btn-light btn-sm" (click)="ocultarDocumentos()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        
+        <div class="card-body">
+          
+          <!-- Cargando documentos -->
+          <div *ngIf="cargandoDocumentos" class="text-center p-3">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando documentos...</span>
+            </div>
+            <p class="mt-2 text-muted">Cargando documentos...</p>
+          </div>
+
+          <!-- Lista de documentos -->
+          <div *ngIf="!cargandoDocumentos && documentos.length > 0">
+            <div class="row">
+              <div class="col-md-6 mb-3" *ngFor="let doc of documentos">
+                <div class="card border-secondary">
+                  <div class="card-body">
+                    <h6 class="card-title">
+                      <i class="bi bi-file-text text-primary"></i>
+                      {{ doc.nombreTipoDocumento || 'Documento' }}
+                    </h6>
+                    <p class="card-text">
+                      <strong>Número:</strong> {{ doc.nodocumento || 'Sin número' }}<br>
+                      <strong>Fecha creación:</strong> {{ doc.fechacreacion | date:'dd/MM/yyyy HH:mm' }}<br>
+                      <strong>Creado por:</strong> {{ doc.usuariocreacion }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sin documentos -->
+          <div *ngIf="!cargandoDocumentos && documentos.length === 0" class="text-center p-4">
+            <i class="bi bi-file-x display-1 text-muted"></i>
+            <p class="text-muted mt-3">Esta persona no tiene documentos registrados.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar documentos de la persona -->
+<div class="modal fade" id="documentosModal" tabindex="-1" aria-labelledby="documentosModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title" id="documentosModalLabel">
+          <i class="bi bi-file-text me-2"></i>
+          Documentos de {{ nombrePersona }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Loading spinner -->
+        <div *ngIf="cargandoDocumentos" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando documentos...</span>
+          </div>
+          <p class="mt-2">Cargando documentos...</p>
+        </div>
+
+        <!-- Lista de documentos -->
+        <div *ngIf="!cargandoDocumentos && documentos.length > 0">
+          <div class="row g-3">
+            <div class="col-md-6" *ngFor="let doc of documentos; let i = index">
+              <div class="card h-100">
+                <div class="card-body">
+                  <h6 class="card-title text-primary">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    {{ doc.nombreTipoDocumento || 'Documento' }}
+                  </h6>
+                  <p class="card-text">
+                    <strong>Número:</strong> {{ doc.nodocumento || 'Sin número' }}<br>
+                    <strong>Fecha creación:</strong> {{ doc.fechacreacion | date:'dd/MM/yyyy HH:mm' }}<br>
+                    <strong>Creado por:</strong> {{ doc.usuariocreacion }}
+                  </p>
+                  
+                  <div *ngIf="doc.fechamodificacion" class="text-muted small">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    Modificado: {{ doc.fechamodificacion | date:'dd/MM/yyyy HH:mm' }} por {{ doc.usuariomodificacion }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sin documentos -->
+        <div *ngIf="!cargandoDocumentos && documentos.length === 0" class="text-center p-4">
+          <i class="bi bi-file-x display-1 text-muted"></i>
+          <p class="text-muted mt-3 mb-0">Esta persona no tiene documentos registrados.</p>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,120 @@
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Gestión de Estado Civil</h2>
+
+  <!-- Formulario para agregar/editar estado civil -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form #estadoCivilForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-md-9">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="form-control"
+              [(ngModel)]="estadoCivil.nombre"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-12 d-flex gap-2">
+            <!-- Botón Guardar -->
+            <button
+              type="submit"
+              class="btn btn-primary mb-3"
+              [disabled]="!estadoCivilForm.form.valid"
+              *ngIf="!isEditMode"
+            >
+              Guardar
+            </button>
+
+            <!-- Botón Actualizar -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!estadoCivilForm.form.valid"
+              *ngIf="isEditMode"
+            >
+              Actualizar
+            </button>
+
+            <!-- Botón Limpiar -->
+            <button
+              type="button"
+              class="btn btn-secondary mb-3"
+              (click)="onReset()"
+            >
+              Limpiar
+            </button>
+
+            <!-- Botón Ir al Menú -->
+            <button
+              type="button"
+              class="btn btn-secondary mb-3"
+              routerLink="/menu"
+            >
+              Ir al Menú <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de estados civiles -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID Estado Civil</th>
+          <th>Nombre</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
+          <th class="sticky-buttons">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Si no hay registros -->
+        <tr *ngIf="estadosCiviles.length === 0">
+          <td colspan="7" class="text-center text-muted py-3">
+            No hay registros disponibles.
+          </td>
+        </tr>
+
+        <!-- Listado -->
+        <tr *ngFor="let e of estadosCiviles">
+          <td>{{ e.idEstadoCivil }}</td>
+          <td>{{ e.nombre }}</td>
+          <td>{{ e.fechaCreacion | date: 'd, MMMM yyyy' }}</td>
+          <td>{{ e.usuarioCreacion }}</td>
+          <td>{{ e.fechaModificacion | date: 'd, MMMM yyyy' }}</td>
+          <td>{{ e.usuarioModificacion }}</td>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <!-- Botón Editar -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(e)"
+              >
+                Editar
+              </button>
+
+              <!-- Botón Eliminar -->
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(e.idEstadoCivil!)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

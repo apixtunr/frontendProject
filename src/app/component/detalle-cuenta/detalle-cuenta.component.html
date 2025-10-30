@@ -1,0 +1,69 @@
+<!-- Detalles de cuenta seleccionada extraído como componente reutilizable -->
+<div class="card mt-4" *ngIf="cuentaSeleccionada">
+  <div class="card-header bg-warning text-dark">
+    <h6 class="mb-0">
+      <i class="bi bi-calculator"></i>
+      Detalles de Cuenta #{{ cuentaSeleccionada!.idsaldocuenta }}
+    </h6>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-6">ID Cuenta:</dt>
+          <dd class="col-sm-6">{{ cuentaSeleccionada!.idsaldocuenta }}</dd>
+          <dt class="col-sm-6">ID Persona:</dt>
+          <dd class="col-sm-6">{{ cuentaSeleccionada!.idpersona }}</dd>
+          <dt class="col-sm-6">Tipo Saldo:</dt>
+          <dd class="col-sm-6">
+            <span class="badge bg-info text-dark">
+              {{ obtenerNombreTipoSaldo(cuentaSeleccionada!.idtiposaldocuenta || 0) }}
+            </span>
+          </dd>
+        </dl>
+      </div>
+      <div class="col-md-6">
+        <dl class="row">
+          <dt class="col-sm-6">Saldo Anterior:</dt>
+          <dd class="col-sm-6">{{ cuentaSeleccionada!.saldoanterior || 0 | currency:'Q':'symbol':'1.2-2' }}</dd>
+          <dt class="col-sm-6">Débitos:</dt>
+          <dd class="col-sm-6 text-success">{{ cuentaSeleccionada!.debitos || 0 | currency:'Q':'symbol':'1.2-2' }}</dd>
+          <dt class="col-sm-6">Créditos:</dt>
+          <dd class="col-sm-6 text-danger">{{ cuentaSeleccionada!.creditos || 0 | currency:'Q':'symbol':'1.2-2' }}</dd>
+        </dl>
+      </div>
+    </div>
+    <hr>
+    <!-- Cálculos de saldo -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card bg-light">
+          <div class="card-body text-center">
+            <h6 class="card-title">Saldo Calculado (Fórmula)</h6>
+            <h4 [class.text-success]="calcularSaldoFormula(cuentaSeleccionada!) > 0"
+                [class.text-danger]="calcularSaldoFormula(cuentaSeleccionada!) < 0">
+              {{ calcularSaldoFormula(cuentaSeleccionada!) | currency:'Q':'symbol':'1.2-2' }}
+            </h4>
+            <small class="text-muted">SaldoAnterior + Débitos - Créditos</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card bg-primary text-white">
+          <div class="card-body text-center">
+            <h6 class="card-title">Saldo desde Backend</h6>
+            <h4 *ngIf="saldoCalculado !== null">{{ saldoCalculado | currency:'Q':'symbol':'1.2-2' }}</h4>
+            <p *ngIf="saldoCalculado === null" class="mb-2">No calculado</p>
+            <button class="btn btn-light btn-sm" 
+                    (click)="calcularSaldoCuenta()"
+                    [disabled]="calculandoSaldo">
+              <span *ngIf="calculandoSaldo" class="spinner-border spinner-border-sm me-2"></span>
+              <i *ngIf="!calculandoSaldo" class="bi bi-calculator me-2"></i>
+              {{ calculandoSaldo ? 'Calculando...' : 'Calcular' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

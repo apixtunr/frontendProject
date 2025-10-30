@@ -1,0 +1,107 @@
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Gestión de Géneros</h2>
+
+  <!-- Mostrar errores si los hay -->
+  <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ error }}
+    <button type="button" class="btn-close" (click)="error = ''" aria-label="Close"></button>
+  </div>
+
+  <!-- Formulario para agregar/editar género -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form #generoForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-md-12">
+            <label for="nombre" class="form-label">Nombre del Género</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="form-control"
+              [(ngModel)]="genero.nombre"
+              placeholder="Ingrese el nombre del género"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-3 d-flex gap-2">
+          <!-- Botón Crear (Alta) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.alta"
+            *ngIf="!isEditMode && permisosGenero?.alta"
+          >
+            Crear
+          </button>
+          <!-- Botón Actualizar (Cambio) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="!genero.nombre || genero.nombre.trim() === '' || !permisosGenero?.cambio"
+            *ngIf="isEditMode && permisosGenero?.cambio"
+          >
+            Actualizar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" (click)="onReset()">
+            Limpiar
+          </button>
+          <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+            Ir al Menú <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de géneros -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
+          <th class="sticky-buttons">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let gen of generos">
+          <td>{{ gen.idgenero }}</td>
+          <td>{{ gen.nombre }}</td>
+          <td>{{ gen.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ gen.usuarioCreacion }}</td>
+          <td>{{ gen.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ gen.usuarioModificacion }}</td>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <!-- Botón Editar (Cambio) -->
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(gen)"
+                *ngIf="permisosGenero?.cambio"
+                [disabled]="!permisosGenero?.cambio"
+              >
+                Editar
+              </button>
+              <!-- Botón Eliminar (Baja) -->
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(gen.idgenero)"
+                *ngIf="permisosGenero?.baja"
+                [disabled]="!permisosGenero?.baja"
+              >
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

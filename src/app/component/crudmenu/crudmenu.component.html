@@ -1,0 +1,101 @@
+<div class="container my-5">
+	<div class="mb-3">
+		    <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+      			Ir al Menú <i class="bi bi-arrow-right"></i>
+    		</button>
+	</div>
+	<h2 class="mb-4 text-center">Gestión de Menús</h2>
+
+	<!-- Formulario para agregar/editar menú -->
+	<div class="card mb-5 shadow-sm">
+		<div class="card-body">
+			<form [formGroup]="menuForm" (ngSubmit)="editando ? onUpdate() : onSubmit()">
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label class="form-label">Módulo</label>
+						<select class="form-select" formControlName="idmodulo" required>
+							<option value="">Seleccione módulo</option>
+							<option *ngFor="let modulo of modulos" [value]="modulo.idModulo">{{ modulo.nombre }}</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label class="form-label">Nombre</label>
+						<input type="text" class="form-control" formControlName="nombre" placeholder="Nombre del menú" />
+					</div>
+				</div>
+				<div class="mt-4 d-flex gap-2">
+								<!-- Botón Agregar (Alta) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="menuForm.invalid || !permisosMenu?.alta"
+									*ngIf="!editando && permisosMenu?.alta"
+								>
+									Agregar
+								</button>
+								<!-- Botón Actualizar (Cambio) -->
+								<button
+									type="submit"
+									class="btn btn-primary"
+									[disabled]="menuForm.invalid || !permisosMenu?.cambio"
+									*ngIf="editando && permisosMenu?.cambio"
+								>
+									Actualizar
+								</button>
+					<button type="button" class="btn btn-secondary" (click)="onReset()">Limpiar</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<!-- Tabla de menús -->
+	<div class="table-responsive">
+		<table class="table table-striped table-bordered align-middle">
+			<thead class="table-dark">
+				<tr>
+			<!--		<th>ID</th>-->
+					<th>Módulo</th>
+					<th>Nombre</th>
+					<th>Orden</th>
+					<th>Fecha Creación</th>
+					<th>Usuario Creación</th>
+					<th>Fecha Modificación</th>
+					<th>Usuario Modificación</th>
+					<th class="text-center">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let menu of menus">
+				<!--	<td>{{ menu.idmenu }}</td>-->
+					<td>{{ getNombreModulo(menu.idmodulo) }}</td>
+					<td>{{ menu.nombre }}</td>
+					<td>{{ menu.ordenmenu }}</td>
+					<td>{{ menu.fechacreacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ menu.usuariocreacion }}</td>
+					<td>{{ menu.fechamodificacion | date:'dd/MM/yyyy' }}</td>
+					<td>{{ menu.usuariomodificacion }}</td>
+					<td class="text-center">
+									<!-- Botón Editar (Cambio) -->
+									<button
+										class="btn btn-sm btn-info me-1"
+										(click)="onEdit(menu)"
+										*ngIf="permisosMenu?.cambio"
+										[disabled]="!permisosMenu?.cambio"
+									>
+										Editar
+									</button>
+									<!-- Botón Eliminar (Baja) -->
+									<button
+										class="btn btn-sm btn-danger"
+										(click)="onDelete(menu.idmenu!)"
+										*ngIf="permisosMenu?.baja"
+										[disabled]="!permisosMenu?.baja"
+									>
+										Eliminar
+									</button>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

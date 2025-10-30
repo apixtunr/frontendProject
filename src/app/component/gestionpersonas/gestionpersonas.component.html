@@ -1,0 +1,272 @@
+<div class="container my-5">
+  <h2 class="mb-4 text-center">Gestión de Personas</h2>
+
+  <!-- Formulario para agregar/editar persona -->
+  <div class="card mb-5 shadow-sm" *ngIf="permisosUsuario">
+    <div class="card-body">
+      <form
+        [formGroup]="personaForm"
+        (ngSubmit)="isEditMode ? onUpdate() : onSubmit()"
+      >
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input
+              type="text"
+              formControlName="nombre"
+              class="form-control"
+              placeholder="Ingrese nombre completo"
+            />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Apellido</label>
+            <input
+              type="text"
+              formControlName="apellido"
+              class="form-control"
+              placeholder="Ingrese apellido completo"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-3">
+            <label class="form-label">Fecha Nacimiento</label>
+            <input
+              type="date"
+              formControlName="fechaNacimiento"
+              class="form-control"
+            />
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Estado Civil</label>
+            <select formControlName="idEstadoCivil" class="form-control">
+              <option value="0">Seleccione estado civil</option>
+              <option *ngFor="let estadoCivil of estadosCiviles" [value]="estadoCivil.idEstadoCivil">
+                {{ estadoCivil.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Género</label>
+            <select formControlName="idGenero" class="form-control">
+              <option value="0">Seleccione género</option>
+              <option *ngFor="let genero of generos" [value]="genero.idgenero">
+                {{ genero.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label">Correo Electrónico</label>
+            <input
+              type="email"
+              formControlName="correoElectronico"
+              class="form-control"
+              placeholder="Ingrese correo"
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-4">
+            <label class="form-label">Dirección</label>
+            <input
+              type="text"
+              formControlName="direccion"
+              class="form-control"
+              placeholder="Ingrese dirección"
+            />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Teléfono</label>
+            <input
+              type="text"
+              formControlName="telefono"
+              class="form-control"
+              placeholder="Ingrese teléfono"
+            />
+          </div>
+        </div>
+
+        <!-- Campos de documento principal eliminados del formulario de persona -->
+
+        <!-- Botones -->
+        <div class="mt-4 d-flex gap-2">
+          <!-- Botón Agregar (Alta) -->
+          <button
+            type="submit"
+            class="btn btn-primary mb-3"
+            [disabled]="personaForm.invalid || !permisosUsuario || !permisosUsuario.alta"
+            *ngIf="!isEditMode && permisosUsuario && permisosUsuario.alta"
+          >
+            Agregar
+          </button>
+          <!-- Botón Actualizar (Cambio) -->
+          <button
+            type="button"
+            class="btn btn-success mb-3"
+            [disabled]="personaForm.invalid || !permisosUsuario || !permisosUsuario.cambio"
+            (click)="onUpdate()"
+            *ngIf="isEditMode && permisosUsuario && permisosUsuario.cambio"
+          >
+            Actualizar
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary mb-3"
+            (click)="onReset()"
+          >
+            Limpiar
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary mb-3"
+            routerLink="/menu"
+          >
+            Ir al Menú <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sección de Documentos de Persona (solo en modo edición y si la persona existe) -->
+  <!--
+  <div *ngIf="isEditMode && personaForm.value.idPersona">
+    ... (sección de documentos en edición oculta) ...
+  </div>
+  -->
+
+  <!-- Modal para agregar/editar documento (simple, sin librería externa) -->
+  <div class="modal fade show" tabindex="-1" [ngStyle]="{display: mostrarModalDocumento ? 'block' : 'none', background: 'rgba(0,0,0,0.3)'}" *ngIf="mostrarModalDocumento">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">{{ documentoEditando ? 'Editar' : 'Agregar' }} Documento</h5>
+          <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="documentoForm">
+            <div class="mb-3">
+              <label class="form-label">Tipo de Documento</label>
+              <select class="form-control" formControlName="idtipodocumento">
+                <option value="">Seleccione tipo</option>
+                <option *ngFor="let tipo of tiposDocumento" [value]="tipo.idTipoDocumento">{{ tipo.nombre }}</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Número de Documento</label>
+              <input type="text" class="form-control" formControlName="nodocumento" />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
+          <button type="button" class="btn btn-success" [disabled]="documentoForm.invalid" (click)="guardarDocumento()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de personas -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Fecha Nacimiento</th>
+          <th>Estado Civil</th>
+          <th>Género</th>
+          <!--<th>Tipo Documento</th>-->
+          <!--<th>Número Documento</th>-->
+          <th>Correo</th>
+          <th>Teléfono</th>
+          <th>Dirección</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Modificación</th>
+          <th>Fecha Modificación</th>
+          <th>Documentos</th>
+          <th class="text-center">Ver Documentos</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let persona of personas">
+          <td>{{ persona.idPersona }}</td>
+          <td>{{ persona.nombre }}</td>
+          <td>{{ persona.apellido }}</td>
+          <td>{{ persona.fechaNacimiento | date : "dd/MM/yyyy" }}</td>
+          <td>{{ getEstadoCivilNombre(persona.idEstadoCivil) }}</td>
+          <td>{{ getGeneroNombre(persona.idGenero) }}</td>
+          <!--<td>{{ getTipoDocumentoNombre(persona.idTipoDocumento) }}</td>-->
+          <!--<td>{{ persona.numeroDocumento }}</td>-->
+          <td>{{ persona.correoElectronico }}</td>
+          <td>{{ persona.telefono }}</td>
+          <td>{{ persona.direccion }}</td>
+          <td>{{ persona.usuarioCreacion }}</td>
+          <td>{{ persona.fechaCreacion | date:'dd/MM/yyyy' }}</td>
+          <td>{{ persona.usuarioModificacion }}</td>
+          <td>{{ persona.fechaModificacion | date:'dd/MM/yyyy' }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-success btn-sm" (click)="abrirModalDocumentoDesdeTabla(persona)">
+              <i class="bi bi-plus-circle"></i> Agregar documento
+            </button>
+          </td>
+          <td class="text-center">
+            <button type="button" class="btn btn-outline-primary btn-sm" title="Ver documentos" (click)="verDocumentosPersona(persona)">
+              <i class="bi bi-eye"></i>
+            </button>
+          </td>
+          <td class="text-center">
+            <!-- Botón Editar (Cambio) -->
+            <button
+              type="button"
+              class="btn btn-sm btn-info me-2"
+              (click)="onEdit(persona)"
+              [disabled]="!permisosUsuario || !permisosUsuario.cambio"
+            >
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+            <!-- Botón Eliminar (Baja) -->
+            <button
+              type="button"
+              class="btn btn-sm btn-danger"
+              (click)="onDelete(persona.idPersona!)"
+              [disabled]="!permisosUsuario || !permisosUsuario.baja"
+            >
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="modal fade show" tabindex="-1" [ngStyle]="{display: mostrarModalVerDocumentos ? 'block' : 'none', background: 'rgba(0,0,0,0.3)'}" *ngIf="mostrarModalVerDocumentos">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Documentos de {{ personaDocumentosNombre }}</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalVerDocumentos()"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div *ngIf="documentosParaVer.length === 0" class="text-center text-muted">
+          No hay documentos registrados.
+        </div>
+        <ul *ngIf="documentosParaVer.length > 0" class="list-group">
+          <li class="list-group-item" *ngFor="let doc of documentosParaVer">
+            <strong>{{ getTipoDocumentoNombre(doc.idtipodocumento) }}:</strong> {{ doc.nodocumento }}
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalVerDocumentos()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>

@@ -1,0 +1,244 @@
+<div class="container my-4">
+  <h2 class="mb-4 text-center">Gestión de Empresas</h2>
+  <div class="d-flex justify-content-start">
+    <button type="button" class="btn btn-secondary mb-3" routerLink="/menu">
+      Ir al Menú <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+  <!-- Formulario para agregar/editar empresa -->
+  <div class="card mb-5 shadow-sm">
+    <div class="card-body">
+      <form #empresaForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              class="form-control"
+              [(ngModel)]="empresa.nombre"
+              required
+            />
+          </div>
+          <div class="col-md-6">
+            <label for="direccion" class="form-label">Dirección</label>
+            <input
+              type="text"
+              id="direccion"
+              name="direccion"
+              class="form-control"
+              [(ngModel)]="empresa.direccion"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-3">
+            <label for="nit" class="form-label">NIT</label>
+            <input
+              type="text"
+              id="nit"
+              name="nit"
+              class="form-control"
+              [(ngModel)]="empresa.nit"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordCantidadMayusculas" class="form-label"
+              >Cantidad Mayúsculas</label
+            >
+            <input
+              type="number"
+              id="passwordCantidadMayusculas"
+              name="passwordCantidadMayusculas"
+              class="form-control"
+              [(ngModel)]="empresa.passwordCantidadMayusculas"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordCantidadMinusculas" class="form-label"
+              >CantidadMinúsculas</label
+            >
+            <input
+              type="number"
+              id="passwordCantidadMinusculas"
+              name="passwordCantidadMinusculas"
+              class="form-control"
+              [(ngModel)]="empresa.passwordCantidadMinusculas"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordCantidadCaracteresEspeciales" class="form-label"
+              >Caracteres Especiales</label
+            >
+            <input
+              type="number"
+              id="passwordCantidadCaracteresEspeciales"
+              name="passwordCantidadCaracteresEspeciales"
+              class="form-control"
+              [(ngModel)]="empresa.passwordCantidadCaracteresEspeciales"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-3">
+            <label for="passwordCantidadCaducidadDias" class="form-label"
+              >Caducidad (días)</label
+            >
+            <input
+              type="number"
+              id="passwordCantidadCaducidadDias"
+              name="passwordCantidadCaducidadDias"
+              class="form-control"
+              [(ngModel)]="empresa.passwordCantidadCaducidadDias"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordLargo" class="form-label"
+              >Largo Contraseña</label
+            >
+            <input
+              type="number"
+              id="passwordLargo"
+              name="passwordLargo"
+              class="form-control"
+              [(ngModel)]="empresa.passwordLargo"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordIntentosAntesDeBloquear" class="form-label"
+              >Intentos Antes de Bloquear</label
+            >
+            <input
+              type="number"
+              id="passwordIntentosAntesDeBloquear"
+              name="passwordIntentosAntesDeBloquear"
+              class="form-control"
+              [(ngModel)]="empresa.passwordIntentosAntesDeBloquear"
+              required
+            />
+          </div>
+          <div class="col-md-3">
+            <label for="passwordCantidadNumeros" class="form-label"
+              >Cantidad Números</label
+            >
+            <input
+              type="number"
+              id="passwordCantidadNumeros"
+              name="passwordCantidadNumeros"
+              class="form-control"
+              [(ngModel)]="empresa.passwordCantidadNumeros"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-12 mt-3 d-flex gap-2">
+            <!-- Botón Actualizar: solo aparece en modo edición y si tiene permiso de cambio -->
+            <button
+              type="button"
+              class="btn btn-primary"
+              [disabled]="!empresaForm.form.valid || !permisosEmpresa.cambio"
+              *ngIf="isEditMode && permisosEmpresa.cambio"
+              (click)="onUpdate()"
+            >
+              Actualizar
+            </button>
+
+            <!-- Botón Guardar: solo aparece en modo creación y si tiene permiso de alta -->
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="!empresaForm.form.valid || !permisosEmpresa.alta"
+              *ngIf="!isEditMode && permisosEmpresa.alta"
+            >
+              Guardar
+            </button>
+
+            <!-- Botón Limpiar -->
+            <button type="button" class="btn btn-secondary" (click)="onReset()">
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tabla de empresas -->
+  <div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>NIT</th>
+          <th>Mayúsculas</th>
+          <th>Minúsculas</th>
+          <th>Especiales</th>
+          <th>Caducidad</th>
+          <th>Largo</th>
+          <th>Intentos</th>
+          <th>Números</th>
+          <th>Preguntas</th>
+          <th>Fecha Creación</th>
+          <th>Usuario Creación</th>
+          <th>Fecha Modificación</th>
+          <th>Usuario Modificación</th>
+          <th class="sticky-buttons">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empresas">
+          <td>{{ emp.idEmpresa }}</td>
+          <td>{{ emp.nombre }}</td>
+          <td>{{ emp.direccion }}</td>
+          <td>{{ emp.nit }}</td>
+          <td>{{ emp.passwordCantidadMayusculas }}</td>
+          <td>{{ emp.passwordCantidadMinusculas }}</td>
+          <td>{{ emp.passwordCantidadCaracteresEspeciales }}</td>
+          <td>{{ emp.passwordCantidadCaducidadDias }}</td>
+          <td>{{ emp.passwordLargo }}</td>
+          <td>{{ emp.passwordIntentosAntesDeBloquear }}</td>
+          <td>{{ emp.passwordCantidadNumeros }}</td>
+          <td>{{ emp.passwordCantidadPreguntasValidar }}</td>
+          <td>{{ emp.fechaCreacion | date }}</td>
+          <td>{{ emp.usuarioCreacion }}</td>
+          <td>{{ emp.fechaModificacion | date }}</td>
+          <td>{{ emp.usuarioModificacion }}</td>
+          <td class="sticky-buttons">
+            <div class="d-flex justify-content-center gap-2">
+              <button
+                class="btn btn-sm btn-info"
+                (click)="onEdit(emp)"
+                *ngIf="permisosEmpresa.cambio"
+                [disabled]="!permisosEmpresa.cambio"
+              >
+                Editar
+              </button>
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="onDelete(emp.nit)"
+                *ngIf="permisosEmpresa.baja"
+                [disabled]="!permisosEmpresa.baja"
+              >
+                Eliminar
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

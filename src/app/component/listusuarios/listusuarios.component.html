@@ -1,0 +1,43 @@
+<div class="container mt-4">
+	<h2 class="mb-4">Lista de Usuarios</h2>
+	<div *ngIf="loading" class="alert alert-info">Cargando usuarios...</div>
+	<div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+	<table *ngIf="usuarios.length" class="table table-striped table-bordered">
+		<thead class="table-dark">
+			<tr>
+				<th>ID</th>
+				<th>Nombre</th>
+				<th>Apellido</th>
+				<th>Correo</th>
+				<th>Teléfono</th>
+				<th>Rol</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let usuario of usuarios">
+				<td>{{ usuario.idUsuario }}</td>
+				<td>{{ usuario.nombre }}</td>
+				<td>{{ usuario.apellido }}</td>
+				<td>{{ usuario.correoElectronico }}</td>
+				<td>{{ usuario.telefonoMovil }}</td>
+				<td>{{ usuario.idRole }}</td>
+			</tr>
+		</tbody>
+	</table>
+	<div *ngIf="!usuarios.length && !loading && !error" class="alert alert-warning">No hay usuarios para mostrar.</div>
+  <td>
+    <button type="button" class="btn btn-secondary" (click)="onEmpresas()">Empresas</button>
+    <br>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="onUsuarios()">Usuarios</button>
+    <br>
+    <br>
+    <button type="button" class="btn btn-secondary" (click)="onSucursales()">Sucursales</button>
+  </td>
+  <td>
+    <button type="button" class="btn btn-secondary" (click)="onRole()">Role</button>
+  </td>
+  <td>
+    <button type="button" class="btn btn-secondary" (click)="onOpcion()">Opción</button>
+  </td>
+</div>

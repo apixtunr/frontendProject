@@ -1,0 +1,106 @@
+/* Tipo de letra para el menú */
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap');
+
+body {
+  font-family: 'Urbanist', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Título de sección en el sidebar */
+.sidebar-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px 5px 20px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 300px;
+  padding-top: 10px;
+  background-color: #00488b;
+  transition: width 0.3s;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+
+.sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 14px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+
+.sidebar .descripcion {
+  font-size: 13px;
+}
+
+
+.sidebar .nav-link:hover {
+  background-color: #d8a602;
+}
+
+
+.sidebar .sub-menu {
+  background-color: #023565;
+  padding-left: 2%;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.sidebar .sub-menu.open {
+  max-height: 800px; /* suficiente para mostrar el contenido */
+}
+
+
+/* Responsive: vista móvil / pequeña */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 60px;
+    min-width: 60px;
+  }
+  .sidebar .description {
+    display: none;
+  }
+  .sidebar .nav-link {
+    justify-content: center;
+    font-size: 13px;
+    padding: 7px 6px;
+  }
+  .main-content {
+    margin-left: 60px;
+  }
+}
+
+/* Ajuste del área principal para nuevo ancho de sidebar */
+.main-content {
+  margin-left: 240px;
+}
+
+/* Ajuste de los botones principales y submenús */
+.module-header {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+}
+.submenu-header {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.95rem;
+}
+.option-link {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+
